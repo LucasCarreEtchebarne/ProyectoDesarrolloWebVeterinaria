@@ -11,12 +11,12 @@
             </button>
         </div>
     </div>
-    <div class="modal fade modal-formulario" id="expedienteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="expedienteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form method="post" th:action="@{/expediente/guardar}">
-                    <div class="modal-header">
-                        <h5 class="modal-title"></h5>
+                <form id="expedienteForm" method="post" th:action="@{/expediente/guardar}">
+                    <div class="modal-header" id="expedienteModalHeader">
+                        <h5 class="modal-title" id="expedienteModalTitulo"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -94,7 +94,7 @@
                             <tbody>
                                 <tr th:each="e : ${expedientes}">
                                     <td>[[${e.idExpediente}]]</td>
-                                    <td>[[${#temporals.format(e.fechaRegistro, 'dd/MM/yyyy')}]]</td>
+                                    <td>[[${e.fechaRegistro}]]</td>
                                     <td>[[${e.mascota.nombre}]]</td>
                                     <td>[[${e.veterinario.nombre}]]</td>
                                     <td>[[${e.sintomas}]]</td>
@@ -111,14 +111,14 @@
                                                 data-bs-toggle="modal" data-bs-target="#expedienteModal"
                                                 data-modo="editar"
                                                 th:data-titulo="#{accion.actualizar}"
-                                                th:data-campo-expediente-id="${e.idExpediente}"
-                                                th:data-campo-expediente-mascota="${e.mascota.idMascota}"
-                                                th:data-campo-expediente-veterinario="${e.veterinario.idVeterinario}"
-                                                th:data-campo-expediente-fecha="${e.fechaRegistro}"
-                                                th:data-campo-expediente-sintomas="${e.sintomas}"
-                                                th:data-campo-expediente-observaciones="${e.observaciones}"
-                                                th:data-campo-expediente-diagnostico="${e.diagnostico}"
-                                                th:data-campo-expediente-tratamiento="${e.tratamiento}">
+                                                th:data-id="${e.idExpediente}"
+                                                th:data-mascota="${e.mascota.idMascota}"
+                                                th:data-veterinario="${e.veterinario.idVeterinario}"
+                                                th:data-fecha="${e.fechaRegistro}"
+                                                th:data-sintomas="${e.sintomas}"
+                                                th:data-observaciones="${e.observaciones}"
+                                                th:data-diagnostico="${e.diagnostico}"
+                                                th:data-tratamiento="${e.tratamiento}">
                                             <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
                                         </button>
                                     </td>

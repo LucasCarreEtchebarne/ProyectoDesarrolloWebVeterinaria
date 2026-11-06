@@ -1,13 +1,11 @@
 package com.metropetclinic.controller;
 
-import com.metropetclinic.domain.EstadoCita;
 import com.metropetclinic.service.CitaService;
 import com.metropetclinic.service.MascotaService;
 import com.metropetclinic.service.ServicioService;
 import com.metropetclinic.service.VeterinarioService;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -33,7 +30,7 @@ public class CitaController {
     private final ServicioService servicioService;
     private final MessageSource messageSource;
 
-    // Agenda del día (HU06), se puede filtrar por veterinario y fecha
+    // Agenda de citas (HU06), se puede filtrar por veterinario y fecha
     @GetMapping("/listado")
     public String listado(@RequestParam(required = false) Integer veterinarioId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
@@ -41,12 +38,21 @@ public class CitaController {
         // Si no se elige fecha se muestran todas las citas
         var citas = citaService.agendaDelDia(veterinarioId, fecha);
 
+        // Se cuentan las citas programadas y canceladas
+        int programadas = 0;
+        int canceladas = 0;
+        for (var c : citas) {
+            if (c.getEstado().equals("PROGRAMADA")) {
+                programadas++;
+            } else if (c.getEstado().equals("CANCELADA")) {
+                canceladas++;
+            }
+        }
+
         model.addAttribute("citas", citas);
         model.addAttribute("totalCitas", citas.size());
-        model.addAttribute("programadas",
-                citas.stream().filter(c -> c.getEstado() == EstadoCita.PROGRAMADA).count());
-        model.addAttribute("canceladas",
-                citas.stream().filter(c -> c.getEstado() == EstadoCita.CANCELADA).count());
+        model.addAttribute("programadas", programadas);
+        model.addAttribute("canceladas", canceladas);
         model.addAttribute("fecha", fecha);
         model.addAttribute("hoy", LocalDate.now());
         model.addAttribute("veterinarioId", veterinarioId);
@@ -93,8 +99,6 @@ public class CitaController {
     // Cancelar cita (HU11): no se elimina, cambia a estado Cancelada
     @PostMapping("/cancelar")
     public String cancelar(@RequestParam Integer idCita,
-            @RequestParam(required = false) Integer veterinarioId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             RedirectAttributes redirectAttributes) {
         String titulo = "todoOk";
         String mensaje = messageSource.getMessage("cita.cancelada", null, Locale.getDefault());
@@ -105,24 +109,6 @@ public class CitaController {
             mensaje = e.getMessage();
         }
         redirectAttributes.addFlashAttribute(titulo, mensaje);
-        if (veterinarioId != null) {
-            redirectAttributes.addAttribute("veterinarioId", veterinarioId);
-        }
-        if (fecha != null) {
-            redirectAttributes.addAttribute("fecha", fecha.toString());
-        }
         return "redirect:/cita/listado";
-    }
-
-    // Devuelve las horas libres para llenar el select del modal (lo usa cita.js)
-    @GetMapping("/disponibilidad")
-    @ResponseBody
-    public List<String> disponibilidad(@RequestParam Integer idVeterinario,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
-            @RequestParam(required = false) Integer idCita) {
-        return citaService.horasDisponibles(idVeterinario, fecha, idCita)
-                .stream()
-                .map(LocalTime::toString)
-                .toList();
     }
 }

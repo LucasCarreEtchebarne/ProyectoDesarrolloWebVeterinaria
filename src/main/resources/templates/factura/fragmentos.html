@@ -11,12 +11,12 @@
             </button>
         </div>
     </div>
-    <div class="modal fade modal-formulario" id="facturaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="facturaModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="post" th:action="@{/factura/guardar}">
-                    <div class="modal-header">
-                        <h5 class="modal-title"></h5>
+                <form id="facturaForm" method="post" th:action="@{/factura/guardar}">
+                    <div class="modal-header" id="facturaModalHeader">
+                        <h5 class="modal-title" id="facturaModalTitulo"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -34,7 +34,7 @@
                         <div class="mb-3">
                             <label for="factura-cita">[[#{factura.cita}]]</label>
                             <select id="factura-cita" name="cita.idCita" class="form-select" required>
-                                <option th:each="c : ${citas}" th:value="${c.idCita}">#[[${c.idCita}]] - [[${#temporals.format(c.fecha, 'dd/MM/yyyy')}]] - [[${c.mascota.nombre}]] - [[${c.servicio.nombreServicio}]]</option>
+                                <option th:each="c : ${citas}" th:value="${c.idCita}">#[[${c.idCita}]] - [[${c.fecha}]] - [[${c.mascota.nombre}]] - [[${c.servicio.nombreServicio}]]</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -94,7 +94,7 @@
                                 <tr th:each="f : ${facturas}">
                                     <td>[[${f.idFactura}]]</td>
                                     <td>[[${f.numeroFactura}]]</td>
-                                    <td>[[${#temporals.format(f.fechaEmision, 'dd/MM/yyyy')}]]</td>
+                                    <td>[[${f.fechaEmision}]]</td>
                                     <td>[[${f.cliente.nombre}]]</td>
                                     <td>[[${f.cita.mascota.nombre}]] - [[${f.cita.servicio.nombreServicio}]]</td>
                                     <td>[[${f.metodoPago}]]</td>
@@ -110,13 +110,13 @@
                                                 data-bs-toggle="modal" data-bs-target="#facturaModal"
                                                 data-modo="editar"
                                                 th:data-titulo="#{accion.actualizar}"
-                                                th:data-campo-factura-id="${f.idFactura}"
-                                                th:data-campo-factura-numero="${f.numeroFactura}"
-                                                th:data-campo-factura-cliente="${f.cliente.idCliente}"
-                                                th:data-campo-factura-cita="${f.cita.idCita}"
-                                                th:data-campo-factura-fecha="${f.fechaEmision}"
-                                                th:data-campo-factura-monto="${f.montoTotal}"
-                                                th:data-campo-factura-metodo="${f.metodoPago}">
+                                                th:data-id="${f.idFactura}"
+                                                th:data-numero="${f.numeroFactura}"
+                                                th:data-cliente="${f.cliente.idCliente}"
+                                                th:data-cita="${f.cita.idCita}"
+                                                th:data-fecha="${f.fechaEmision}"
+                                                th:data-monto="${f.montoTotal}"
+                                                th:data-metodo="${f.metodoPago}">
                                             <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
                                         </button>
                                     </td>

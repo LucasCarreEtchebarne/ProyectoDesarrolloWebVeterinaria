@@ -31,22 +31,22 @@ public class Cita implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String motivo;
 
-    @Enumerated(EnumType.STRING)
+    // Estado de la cita: PROGRAMADA, CANCELADA o COMPLETADA
     @Column(name = "estado_cita", nullable = false, length = 20)
-    private EstadoCita estado = EstadoCita.PROGRAMADA;
+    private String estado = "PROGRAMADA";
 
     // Una mascota puede tener muchas citas
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "id_mascota")
     private Mascota mascota;
 
     // Un veterinario atiende muchas citas
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "id_veterinario")
     private Veterinario veterinario;
 
     // Cada cita es para un servicio del catálogo
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "id_servicio")
     private Servicio servicio;
 }

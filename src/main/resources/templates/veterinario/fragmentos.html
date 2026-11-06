@@ -11,12 +11,12 @@
             </button>
         </div>
     </div>
-    <div class="modal fade modal-formulario" id="veterinarioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="veterinarioModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="post" th:action="@{/veterinario/guardar}">
-                    <div class="modal-header">
-                        <h5 class="modal-title"></h5>
+                <form id="veterinarioForm" method="post" th:action="@{/veterinario/guardar}">
+                    <div class="modal-header" id="veterinarioModalHeader">
+                        <h5 class="modal-title" id="veterinarioModalTitulo"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -83,10 +83,10 @@
                                                 data-bs-toggle="modal" data-bs-target="#veterinarioModal"
                                                 data-modo="editar"
                                                 th:data-titulo="#{accion.actualizar}"
-                                                th:data-campo-veterinario-id="${v.idVeterinario}"
-                                                th:data-campo-veterinario-identificacion="${v.identificacion}"
-                                                th:data-campo-veterinario-nombre="${v.nombre}"
-                                                th:data-campo-veterinario-especialidad="${v.especialidad}">
+                                                th:data-id="${v.idVeterinario}"
+                                                th:data-identificacion="${v.identificacion}"
+                                                th:data-nombre="${v.nombre}"
+                                                th:data-especialidad="${v.especialidad}">
                                             <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
                                         </button>
                                     </td>

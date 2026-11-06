@@ -11,12 +11,12 @@
             </button>
         </div>
     </div>
-    <div class="modal fade modal-formulario" id="servicioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="servicioModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="post" th:action="@{/servicio/guardar}">
-                    <div class="modal-header">
-                        <h5 class="modal-title"></h5>
+                <form id="servicioForm" method="post" th:action="@{/servicio/guardar}">
+                    <div class="modal-header" id="servicioModalHeader">
+                        <h5 class="modal-title" id="servicioModalTitulo"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -89,11 +89,11 @@
                                                 data-bs-toggle="modal" data-bs-target="#servicioModal"
                                                 data-modo="editar"
                                                 th:data-titulo="#{accion.actualizar}"
-                                                th:data-campo-servicio-id="${s.idServicio}"
-                                                th:data-campo-servicio-nombre="${s.nombreServicio}"
-                                                th:data-campo-servicio-descripcion="${s.descripcion}"
-                                                th:data-campo-servicio-precio="${s.precio}"
-                                                th:data-campo-servicio-estado="${s.estado}">
+                                                th:data-id="${s.idServicio}"
+                                                th:data-nombre="${s.nombreServicio}"
+                                                th:data-descripcion="${s.descripcion}"
+                                                th:data-precio="${s.precio}"
+                                                th:data-estado="${s.estado}">
                                             <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
                                         </button>
                                     </td>

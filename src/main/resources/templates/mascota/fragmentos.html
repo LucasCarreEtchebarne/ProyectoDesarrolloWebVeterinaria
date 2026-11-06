@@ -11,12 +11,12 @@
             </button>
         </div>
     </div>
-    <div class="modal fade modal-formulario" id="mascotaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="mascotaModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="post" th:action="@{/mascota/guardar}">
-                    <div class="modal-header">
-                        <h5 class="modal-title"></h5>
+                <form id="mascotaForm" method="post" th:action="@{/mascota/guardar}">
+                    <div class="modal-header" id="mascotaModalHeader">
+                        <h5 class="modal-title" id="mascotaModalTitulo"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -84,7 +84,7 @@
                                     <td>[[${m.nombre}]]</td>
                                     <td>[[${m.especie}]]</td>
                                     <td>[[${m.raza}]]</td>
-                                    <td>[[${#temporals.format(m.fechaNacimiento, 'dd/MM/yyyy')}]]</td>
+                                    <td>[[${m.fechaNacimiento}]]</td>
                                     <td>[[${m.cliente.nombre}]]</td>
                                     <td class="text-nowrap">
                                         <button type="button" class="btn btn-danger btn-sm"
@@ -97,12 +97,12 @@
                                                 data-bs-toggle="modal" data-bs-target="#mascotaModal"
                                                 data-modo="editar"
                                                 th:data-titulo="#{accion.actualizar}"
-                                                th:data-campo-mascota-id="${m.idMascota}"
-                                                th:data-campo-mascota-cliente="${m.cliente.idCliente}"
-                                                th:data-campo-mascota-nombre="${m.nombre}"
-                                                th:data-campo-mascota-especie="${m.especie}"
-                                                th:data-campo-mascota-raza="${m.raza}"
-                                                th:data-campo-mascota-fecha="${m.fechaNacimiento}">
+                                                th:data-id="${m.idMascota}"
+                                                th:data-cliente="${m.cliente.idCliente}"
+                                                th:data-nombre="${m.nombre}"
+                                                th:data-especie="${m.especie}"
+                                                th:data-raza="${m.raza}"
+                                                th:data-fecha="${m.fechaNacimiento}">
                                             <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
                                         </button>
                                     </td>

@@ -11,12 +11,12 @@
             </button>
         </div>
     </div>
-    <div class="modal fade modal-formulario" id="clienteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="clienteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="post" th:action="@{/cliente/guardar}">
-                    <div class="modal-header">
-                        <h5 class="modal-title"></h5>
+                <form id="clienteForm" method="post" th:action="@{/cliente/guardar}">
+                    <div class="modal-header" id="clienteModalHeader">
+                        <h5 class="modal-title" id="clienteModalTitulo"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -95,12 +95,12 @@
                                                 data-bs-toggle="modal" data-bs-target="#clienteModal"
                                                 data-modo="editar"
                                                 th:data-titulo="#{accion.actualizar}"
-                                                th:data-campo-cliente-id="${c.idCliente}"
-                                                th:data-campo-cliente-identificacion="${c.identificacion}"
-                                                th:data-campo-cliente-nombre="${c.nombre}"
-                                                th:data-campo-cliente-telefono="${c.telefono}"
-                                                th:data-campo-cliente-correo="${c.correo}"
-                                                th:data-campo-cliente-direccion="${c.direccion}">
+                                                th:data-id="${c.idCliente}"
+                                                th:data-identificacion="${c.identificacion}"
+                                                th:data-nombre="${c.nombre}"
+                                                th:data-telefono="${c.telefono}"
+                                                th:data-correo="${c.correo}"
+                                                th:data-direccion="${c.direccion}">
                                             <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
                                         </button>
                                     </td>

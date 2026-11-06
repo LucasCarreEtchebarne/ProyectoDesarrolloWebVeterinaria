@@ -11,12 +11,12 @@
             </button>
         </div>
     </div>
-    <div class="modal fade modal-formulario" id="vacunaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="vacunaModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="post" th:action="@{/vacuna/guardar}">
-                    <div class="modal-header">
-                        <h5 class="modal-title"></h5>
+                <form id="vacunaForm" method="post" th:action="@{/vacuna/guardar}">
+                    <div class="modal-header" id="vacunaModalHeader">
+                        <h5 class="modal-title" id="vacunaModalTitulo"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -24,7 +24,7 @@
                         <div class="mb-3">
                             <label for="vacuna-expediente">[[#{vacuna.expediente}]]</label>
                             <select id="vacuna-expediente" name="expediente.idExpediente" class="form-select" required>
-                                <option th:each="e : ${expedientes}" th:value="${e.idExpediente}">#[[${e.idExpediente}]] - [[${e.mascota.nombre}]] ([[${#temporals.format(e.fechaRegistro, 'dd/MM/yyyy')}]])</option>
+                                <option th:each="e : ${expedientes}" th:value="${e.idExpediente}">#[[${e.idExpediente}]] - [[${e.mascota.nombre}]] ([[${e.fechaRegistro}]])</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -79,8 +79,8 @@
                                     <td>[[${v.idVacuna}]]</td>
                                     <td>[[${v.nombreVacuna}]]</td>
                                     <td>[[${v.expediente.mascota.nombre}]]</td>
-                                    <td>[[${#temporals.format(v.fechaAplicacion, 'dd/MM/yyyy')}]]</td>
-                                    <td>[[${#temporals.format(v.proximaDosis, 'dd/MM/yyyy')}]]</td>
+                                    <td>[[${v.fechaAplicacion}]]</td>
+                                    <td>[[${v.proximaDosis}]]</td>
                                     <td>#[[${v.expediente.idExpediente}]]</td>
                                     <td class="text-nowrap">
                                         <button type="button" class="btn btn-danger btn-sm"
@@ -93,11 +93,11 @@
                                                 data-bs-toggle="modal" data-bs-target="#vacunaModal"
                                                 data-modo="editar"
                                                 th:data-titulo="#{accion.actualizar}"
-                                                th:data-campo-vacuna-id="${v.idVacuna}"
-                                                th:data-campo-vacuna-expediente="${v.expediente.idExpediente}"
-                                                th:data-campo-vacuna-nombre="${v.nombreVacuna}"
-                                                th:data-campo-vacuna-aplicacion="${v.fechaAplicacion}"
-                                                th:data-campo-vacuna-proxima="${v.proximaDosis}">
+                                                th:data-id="${v.idVacuna}"
+                                                th:data-expediente="${v.expediente.idExpediente}"
+                                                th:data-nombre="${v.nombreVacuna}"
+                                                th:data-aplicacion="${v.fechaAplicacion}"
+                                                th:data-proxima="${v.proximaDosis}">
                                             <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
                                         </button>
                                     </td>

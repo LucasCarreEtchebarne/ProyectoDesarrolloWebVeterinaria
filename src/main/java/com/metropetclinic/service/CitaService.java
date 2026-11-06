@@ -1,21 +1,14 @@
 package com.metropetclinic.service;
 
 import com.metropetclinic.domain.Cita;
-import com.metropetclinic.domain.EstadoCita;
-import com.metropetclinic.domain.Mascota;
-import com.metropetclinic.domain.Servicio;
-import com.metropetclinic.domain.Veterinario;
 import com.metropetclinic.repository.CitaRepository;
 import com.metropetclinic.repository.MascotaRepository;
 import com.metropetclinic.repository.ServicioRepository;
 import com.metropetclinic.repository.VeterinarioRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class CitaService {
-
-    // Horario de atención: citas de 30 min entre las 8:00 y las 17:00
-    public static final LocalTime HORA_INICIO = LocalTime.of(8, 0);
-    public static final LocalTime HORA_FIN = LocalTime.of(17, 0);
-    public static final int DURACION_MINUTOS = 30;
 
     // Se enlazan los repositorios que se ocupan para agendar
     private final CitaRepository citaRepository;
@@ -61,95 +49,91 @@ public class CitaService {
         return citaRepository.findByVeterinarioIdVeterinarioAndFechaOrderByHoraAsc(idVeterinario, fecha);
     }
 
-    // Horas libres de un veterinario en una fecha.
-    // idCitaExcluida sirve al reprogramar: la hora que ya ocupa esa cita cuenta como libre.
-    @Transactional(readOnly = true)
-    public List<LocalTime> horasDisponibles(Integer idVeterinario, LocalDate fecha, Integer idCitaExcluida) {
-        List<LocalTime> libres = new ArrayList<>();
-        LocalDate hoy = LocalDate.now();
-        if (fecha.isBefore(hoy)) {
-            return libres;
-        }
-        Set<LocalTime> ocupadas = citaRepository
-                .findByVeterinarioIdVeterinarioAndFechaAndEstado(idVeterinario, fecha, EstadoCita.PROGRAMADA)
-                .stream()
-                .filter(c -> !c.getIdCita().equals(idCitaExcluida))
-                .map(Cita::getHora)
-                .collect(Collectors.toSet());
-        boolean esHoy = fecha.equals(hoy);
-        LocalTime ahora = LocalTime.now();
-        for (LocalTime h = HORA_INICIO; h.isBefore(HORA_FIN); h = h.plusMinutes(DURACION_MINUTOS)) {
-            if (ocupadas.contains(h)) {
-                continue;
-            }
-            if (esHoy && !h.isAfter(ahora)) {
-                continue; // la hora ya pasó
-            }
-            libres.add(h);
-        }
-        return libres;
-    }
-
     // Agendar cita (HU05)
     @Transactional
     public void agendar(Integer idMascota, Integer idVeterinario, Integer idServicio,
             LocalDate fecha, LocalTime hora, String motivo) {
-        Mascota mascota = mascotaRepository.findById(idMascota)
-                .orElseThrow(() -> new IllegalArgumentException("La mascota seleccionada no existe."));
-        Veterinario veterinario = veterinarioRepository.findById(idVeterinario)
-                .orElseThrow(() -> new IllegalArgumentException("El veterinario seleccionado no existe."));
-        Servicio servicio = servicioRepository.findById(idServicio)
-                .orElseThrow(() -> new IllegalArgumentException("El servicio seleccionado no existe."));
+        var mascotaOptional = mascotaRepository.findById(idMascota);
+        if (mascotaOptional.isEmpty()) {
+            throw new IllegalArgumentException("La mascota seleccionada no existe.");
+        }
+        var veterinarioOptional = veterinarioRepository.findById(idVeterinario);
+        if (veterinarioOptional.isEmpty()) {
+            throw new IllegalArgumentException("El veterinario seleccionado no existe.");
+        }
+        var servicioOptional = servicioRepository.findById(idServicio);
+        if (servicioOptional.isEmpty()) {
+            throw new IllegalArgumentException("El servicio seleccionado no existe.");
+        }
 
         validarHorario(idVeterinario, fecha, hora, null);
 
         Cita cita = new Cita();
-        cita.setMascota(mascota);
-        cita.setVeterinario(veterinario);
-        cita.setServicio(servicio);
+        cita.setMascota(mascotaOptional.get());
+        cita.setVeterinario(veterinarioOptional.get());
+        cita.setServicio(servicioOptional.get());
         cita.setFecha(fecha);
         cita.setHora(hora);
         cita.setMotivo(motivo);
-        cita.setEstado(EstadoCita.PROGRAMADA);
+        cita.setEstado("PROGRAMADA");
         citaRepository.save(cita);
     }
 
     // Cancelar cita (HU11): cambia el estado, NO elimina el registro
     @Transactional
     public void cancelar(Integer idCita) {
-        Cita cita = citaRepository.findById(idCita)
-                .orElseThrow(() -> new IllegalArgumentException("La cita no existe: " + idCita));
-        if (cita.getEstado() != EstadoCita.PROGRAMADA) {
+        var citaOptional = citaRepository.findById(idCita);
+        if (citaOptional.isEmpty()) {
+            throw new IllegalArgumentException("La cita no existe: " + idCita);
+        }
+        Cita cita = citaOptional.get();
+        if (!cita.getEstado().equals("PROGRAMADA")) {
             throw new IllegalStateException("Solo se pueden cancelar citas programadas.");
         }
-        cita.setEstado(EstadoCita.CANCELADA);
+        cita.setEstado("CANCELADA");
         citaRepository.save(cita);
     }
 
     // Reprogramar cita (HU12): nueva fecha, hora y, si se quiere, otro veterinario
     @Transactional
     public void reprogramar(Integer idCita, Integer idVeterinario, LocalDate fecha, LocalTime hora) {
-        Cita cita = citaRepository.findById(idCita)
-                .orElseThrow(() -> new IllegalArgumentException("La cita no existe: " + idCita));
-        if (cita.getEstado() != EstadoCita.PROGRAMADA) {
+        var citaOptional = citaRepository.findById(idCita);
+        if (citaOptional.isEmpty()) {
+            throw new IllegalArgumentException("La cita no existe: " + idCita);
+        }
+        Cita cita = citaOptional.get();
+        if (!cita.getEstado().equals("PROGRAMADA")) {
             throw new IllegalStateException("Solo se pueden reprogramar citas programadas.");
         }
-        Veterinario veterinario = veterinarioRepository.findById(idVeterinario)
-                .orElseThrow(() -> new IllegalArgumentException("El veterinario seleccionado no existe."));
+        var veterinarioOptional = veterinarioRepository.findById(idVeterinario);
+        if (veterinarioOptional.isEmpty()) {
+            throw new IllegalArgumentException("El veterinario seleccionado no existe.");
+        }
 
         validarHorario(idVeterinario, fecha, hora, idCita);
 
-        cita.setVeterinario(veterinario);
+        cita.setVeterinario(veterinarioOptional.get());
         cita.setFecha(fecha);
         cita.setHora(hora);
         citaRepository.save(cita);
     }
 
     // El sistema debe validar horarios disponibles antes de realizar el cambio
-    private void validarHorario(Integer idVeterinario, LocalDate fecha, LocalTime hora, Integer idCitaExcluida) {
-        if (!horasDisponibles(idVeterinario, fecha, idCitaExcluida).contains(hora)) {
-            throw new IllegalStateException(
-                    "El veterinario no tiene disponible ese horario. Elija otra fecha u hora.");
+    private void validarHorario(Integer idVeterinario, LocalDate fecha, LocalTime hora, Integer idCita) {
+        LocalDate hoy = LocalDate.now();
+        if (fecha.isBefore(hoy) || (fecha.isEqual(hoy) && !hora.isAfter(LocalTime.now()))) {
+            throw new IllegalStateException("No se puede agendar en una fecha u hora que ya paso.");
+        }
+        boolean ocupado;
+        if (idCita == null) {
+            ocupado = citaRepository.existsByVeterinarioIdVeterinarioAndFechaAndHoraAndEstado(
+                    idVeterinario, fecha, hora, "PROGRAMADA");
+        } else {
+            ocupado = citaRepository.existsByVeterinarioIdVeterinarioAndFechaAndHoraAndEstadoAndIdCitaNot(
+                    idVeterinario, fecha, hora, "PROGRAMADA", idCita);
+        }
+        if (ocupado) {
+            throw new IllegalStateException("El veterinario no tiene disponible ese horario. Elija otra fecha u hora.");
         }
     }
 }

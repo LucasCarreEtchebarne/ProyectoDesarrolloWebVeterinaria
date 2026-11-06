@@ -8,6 +8,12 @@
         <section class="container py-5 text-center">
             <h1 class="text-primary"><i class="fa-solid fa-paw"></i> [[#{index.titulo}]]</h1>
             <p class="lead">[[#{index.subtitulo}]]</p>
+            <div class="row row-cols-2 row-cols-md-4 g-3 mt-4">
+                <div class="col"><a th:href="@{/cliente/listado}" class="btn btn-outline-primary w-100 py-3"><i class="fa-solid fa-users fa-2x d-block mb-2"></i>[[#{plantilla.clientes}]]</a></div>
+                <div class="col"><a th:href="@{/mascota/listado}" class="btn btn-outline-primary w-100 py-3"><i class="fa-solid fa-dog fa-2x d-block mb-2"></i>[[#{plantilla.mascotas}]]</a></div>
+                <div class="col"><a th:href="@{/cita/listado}" class="btn btn-outline-primary w-100 py-3"><i class="fa-solid fa-calendar-check fa-2x d-block mb-2"></i>[[#{plantilla.citas}]]</a></div>
+                <div class="col"><a th:href="@{/servicio/listado}" class="btn btn-outline-primary w-100 py-3"><i class="fa-solid fa-briefcase-medical fa-2x d-block mb-2"></i>[[#{plantilla.servicios}]]</a></div>
+            </div>
         </section>
 
         <footer th:replace="~{general/fragmentos :: footer}"></footer>

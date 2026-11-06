@@ -1,0 +1,118 @@
+<!-- Fragmento #1 formulario unificado para agregar y modificar un servicio (HU10) -->
+<section th:fragment="formulario">
+    <div class="row py-4 mb-2 bg-light">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#servicioModal"
+                    data-modo="agregar" th:data-titulo="#{servicio.agregar}">
+                <i class="fa-solid fa-plus"></i> [[#{servicio.agregar}]]
+            </button>
+        </div>
+    </div>
+    <div class="modal fade modal-formulario" id="servicioModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" th:action="@{/servicio/guardar}">
+                    <div class="modal-header">
+                        <h5 class="modal-title"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="servicio-id" name="idServicio"/>
+                        <div class="mb-3">
+                            <label for="servicio-nombre">[[#{servicio.nombre}]]</label>
+                            <input type="text" id="servicio-nombre" name="nombreServicio" class="form-control" maxlength="100" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="servicio-descripcion">[[#{servicio.descripcion}]]</label>
+                            <textarea id="servicio-descripcion" name="descripcion" class="form-control" rows="3" maxlength="255"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="servicio-precio">[[#{servicio.precio}]]</label>
+                            <input type="number" id="servicio-precio" name="precio" class="form-control" min="0" step="0.01" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="servicio-estado">[[#{servicio.estado}]]</label>
+                            <input type="checkbox" id="servicio-estado" name="estado" class="form-check-input"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> [[#{accion.cerrar}]]
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk"></i> [[#{accion.guardar}]]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Fragmento #2 listado de servicios -->
+<section th:fragment="listado" class="p-3">
+    <div class="row p-3">
+        <div class="col-md-9">
+            <div class="card p-2">
+                <div class="card-header"><h4>[[#{servicio.listado}]]</h4></div>
+                <div class="card-body">
+                    <div th:if="${servicios != null and !servicios.empty}">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>[[#{servicio.nombre}]]</th>
+                                    <th>[[#{servicio.descripcion}]]</th>
+                                    <th>[[#{servicio.precio}]]</th>
+                                    <th>[[#{servicio.estado}]]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="s : ${servicios}">
+                                    <td>[[${s.idServicio}]]</td>
+                                    <td>[[${s.nombreServicio}]]</td>
+                                    <td>[[${s.descripcion}]]</td>
+                                    <td class="text-end">[[${#numbers.formatCurrency(s.precio)}]]</td>
+                                    <td th:text="${s.estado} ? #{estado.activo} : #{estado.inactivo}"></td>
+                                    <td class="text-nowrap">
+                                        <button type="button" class="btn btn-danger btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#confirmModal"
+                                                th:data-bs-id="${s.idServicio}"
+                                                th:data-bs-descripcion="${s.nombreServicio}">
+                                            <i class="fa-solid fa-trash"></i> [[#{accion.eliminar}]]
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#servicioModal"
+                                                data-modo="editar"
+                                                th:data-titulo="#{accion.actualizar}"
+                                                th:data-campo-servicio-id="${s.idServicio}"
+                                                th:data-campo-servicio-nombre="${s.nombreServicio}"
+                                                th:data-campo-servicio-descripcion="${s.descripcion}"
+                                                th:data-campo-servicio-precio="${s.precio}"
+                                                th:data-campo-servicio-estado="${s.estado}">
+                                            <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center p-2" th:if="${servicios == null or servicios.empty}">
+                        <span>[[#{lista.vacia}]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white mb-3">
+                <div class="card-body"><h3>[[#{servicio.total}]]</h3>
+                    <h4 class="fs-2"><i class="fa-solid fa-briefcase-medical"></i> [[${totalServicios}]]</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

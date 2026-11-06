@@ -11,35 +11,15 @@ create database metropet
 
 -- Creación del usuario de la aplicación y sus permisos
 create user 'usuario_metropet'@'%' identified by 'Metropet_Clave.';
-grant select, insert, update, delete on metropet.* to 'usuario_metropet'@'%';
+grant all privileges on metropet.* to 'usuario_metropet'@'%';
 flush privileges;
 
 use metropet;
 
--- --- Sección de Creación de Tablas ---
+-- -- Sección de Creación de Tablas ---
+
  
---- TABLA DE ROL
-create table rol (
-  id_rol INT NOT NULL AUTO_INCREMENT,
-  nombre_rol VARCHAR(30) NOT NULL,
-  descripcion VARCHAR(100),
-  PRIMARY KEY (id_rol),
-  UNIQUE (nombre_rol)
-) ENGINE = InnoDB;
- 
---- TABLA DE USUARIO
-create table usuario (
-  id_usuario INT NOT NULL AUTO_INCREMENT,
-  correo VARCHAR(100) NOT NULL,
-  contrasena VARCHAR(512) NOT NULL,
-  estado BOOLEAN NOT NULL DEFAULT TRUE,
-  id_rol INT NOT NULL,
-  PRIMARY KEY (id_usuario),
-  UNIQUE (correo),
-  FOREIGN KEY fk_usuario_rol (id_rol) REFERENCES rol(id_rol)
-) ENGINE = InnoDB;
- 
---- TABLA CLIENTE
+-- TABLA CLIENTE
 create table cliente (
   id_cliente INT NOT NULL AUTO_INCREMENT,
   identificacion VARCHAR(20) NOT NULL,
@@ -53,7 +33,7 @@ create table cliente (
   FOREIGN KEY fk_cliente_usuario (id_usuario) REFERENCES usuario(id_usuario)
 ) ENGINE = InnoDB;
  
---- TABLA MASCOTA
+-- TABLA MASCOTA
 create table mascota (
   id_mascota INT NOT NULL AUTO_INCREMENT,
   nombre VARCHAR(50) NOT NULL,
@@ -66,7 +46,7 @@ create table mascota (
   INDEX ndx_mascota_cliente (id_cliente)
 ) ENGINE = InnoDB;
  
---- TABLA SERVICIO
+-- TABLA SERVICIO
 create table servicio (
   id_servicio INT NOT NULL AUTO_INCREMENT,
   nombre_servicio VARCHAR(100) NOT NULL,
@@ -77,7 +57,7 @@ create table servicio (
   UNIQUE (nombre_servicio)
 ) ENGINE = InnoDB;
  
---- TABLA VETERINARIO
+-- TABLA VETERINARIO
 create table veterinario (
   id_veterinario INT NOT NULL AUTO_INCREMENT,
   identificacion VARCHAR(20) NOT NULL,
@@ -89,7 +69,7 @@ create table veterinario (
   FOREIGN KEY fk_veterinario_usuario (id_usuario) REFERENCES usuario(id_usuario)
 ) ENGINE = InnoDB;
  
---- TABLA CITA
+-- TABLA CITA
 create table cita (
   id_cita INT NOT NULL AUTO_INCREMENT,
   fecha DATE NOT NULL,
@@ -106,7 +86,7 @@ create table cita (
   INDEX ndx_cita_agenda (id_veterinario, fecha, hora)
 ) ENGINE = InnoDB;
  
---- TABLA DE EXPEDIENTE MEDICO
+-- TABLA DE EXPEDIENTE MEDICO
 create table expediente_medico (
   id_expediente INT NOT NULL AUTO_INCREMENT,
   fecha_registro DATE NOT NULL,
@@ -122,7 +102,7 @@ create table expediente_medico (
   INDEX ndx_expediente_mascota (id_mascota)
 ) ENGINE = InnoDB;
  
---- TABLA DE VACUNA
+-- TABLA DE VACUNA
 create table vacuna (
   id_vacuna INT NOT NULL AUTO_INCREMENT,
   nombre_vacuna VARCHAR(100) NOT NULL,
@@ -133,7 +113,7 @@ create table vacuna (
   FOREIGN KEY fk_vacuna_expediente (id_expediente) REFERENCES expediente_medico(id_expediente)
 ) ENGINE = InnoDB;
  
---- TABLA DE FACTURA
+-- TABLA DE FACTURA
 create table factura (
   id_factura INT NOT NULL AUTO_INCREMENT,
   numero_factura VARCHAR(20) NOT NULL,
@@ -148,16 +128,16 @@ create table factura (
   FOREIGN KEY fk_factura_cita (id_cita) REFERENCES cita(id_cita)
 ) ENGINE = InnoDB;
  
--- --- Sección de Inserción de Datos ---
+-- -- Sección de Inserción de Datos ---
 
---- INSERCION DE ROLES
+-- INSERCION DE ROLES
 insert into rol (nombre_rol, descripcion) values
   ('ROLE_ADMIN', 'Administrador'),
   ('ROLE_RECEPCIONISTA', 'Recepcionista'),
   ('ROLE_VETERINARIO', 'Veterinario'),
   ('ROLE_CLIENTE', 'Cliente');
  
---- INSERCION DE USUARIOS
+-- INSERCION DE USUARIOS
 insert into usuario (correo, contrasena, estado, id_rol) values
   ('admin@metropet.com',      '$2a$10$nCYAwz53.NLZjazam7IEs.RqytLvfXO4HzUOMDD829kSQvzwJWRAS', true, 1),
   ('recepcion@metropet.com',  '$2a$10$nCYAwz53.NLZjazam7IEs.RqytLvfXO4HzUOMDD829kSQvzwJWRAS', true, 2),
@@ -166,13 +146,13 @@ insert into usuario (correo, contrasena, estado, id_rol) values
   ('juan.chacon@correo.com',  '$2a$10$nCYAwz53.NLZjazam7IEs.RqytLvfXO4HzUOMDD829kSQvzwJWRAS', true, 4),
   ('maria.solis@correo.com',  '$2a$10$nCYAwz53.NLZjazam7IEs.RqytLvfXO4HzUOMDD829kSQvzwJWRAS', true, 4);
  
---- INSERCION DE CLIENTES
+-- INSERCION DE CLIENTES
 insert into cliente (identificacion, nombre, telefono, correo, direccion, id_usuario) values
   ('1-1111-1111', 'Juan Chacón Mora',   '8888-1111', 'juan.chacon@correo.com', 'San Pedro, San José', 5),
   ('2-2222-2222', 'María Solís Vargas', '8888-2222', 'maria.solis@correo.com', 'Curridabat, San José', 6),
   ('3-3333-3333', 'Pedro Alvarado Rojas', '8888-3333', 'pedro.alvarado@correo.com', 'Tres Ríos, Cartago', null);
  
---- INSERCION DE MASCOTAS
+-- INSERCION DE MASCOTAS
 insert into mascota (nombre, especie, raza, fecha_nacimiento, id_cliente) values
   ('Max',   'Perro',  'Labrador',      '2020-03-15', 1),
   ('Luna',  'Gato',   'Siamés',        '2021-07-02', 1),
@@ -180,7 +160,7 @@ insert into mascota (nombre, especie, raza, fecha_nacimiento, id_cliente) values
   ('Mía',   'Gato',   'Criollo',       '2022-01-10', 2),
   ('Coco',  'Conejo', 'Enano',         '2023-05-05', 3);
  
---- INSERCION DE SERVICIOS
+-- INSERCION DE SERVICIOS
 insert into servicio (nombre_servicio, descripcion, precio, estado) values
   ('Consulta general',   'Revisión médica general de la mascota', 10000, true),
   ('Vacunación',         'Aplicación de vacunas según el esquema', 12000, true),
@@ -189,12 +169,12 @@ insert into servicio (nombre_servicio, descripcion, precio, estado) values
   ('Limpieza dental',    'Profilaxis dental bajo supervisión veterinaria', 25000, true),
   ('Cirugía menor',      'Procedimientos quirúrgicos ambulatorios', 60000, true);
  
---- INSERCION DE VETERINARIOS
+-- INSERCION DE VETERINARIOS
 insert into veterinario (identificacion, nombre, especialidad, id_usuario) values
   ('4-4444-4444', 'Dra. Laura Mora',     'Medicina general', 3),
   ('5-5555-5555', 'Dr. Carlos Jiménez',  'Cirugía',          4);
  
---- INSERCION DE CITAS
+-- INSERCION DE CITAS
 insert into cita (fecha, hora, motivo, estado_cita, id_mascota, id_veterinario, id_servicio) values
   (curdate(), '08:00', 'Control anual',        'PROGRAMADA', 1, 1, 1),
   (curdate(), '09:30', 'Vacuna anual',         'PROGRAMADA', 2, 1, 2),
@@ -203,17 +183,17 @@ insert into cita (fecha, hora, motivo, estado_cita, id_mascota, id_veterinario, 
   (date_add(curdate(), interval 1 day), '08:30', 'Revisión de rutina', 'PROGRAMADA', 5, 1, 1),
   (date_sub(curdate(), interval 7 day), '11:00', 'Chequeo general',    'COMPLETADA', 1, 1, 1);
  
---- INSERCION DE EXPEDIENTES MEDICOS
+-- INSERCION DE EXPEDIENTES MEDICOS
 insert into expediente_medico (fecha_registro, observaciones, sintomas, diagnostico, tratamiento, id_mascota, id_veterinario) values
   (date_sub(curdate(), interval 7 day), 'Paciente alerta y activo', 'Ninguno', 'Sano', 'Mantener dieta y ejercicio', 1, 1),
   (date_sub(curdate(), interval 30 day), 'Pérdida de apetito', 'Vómito y decaimiento', 'Gastritis leve', 'Dieta blanda y protector gástrico', 2, 1);
  
---- INSERCION DE VACUNAS
+-- INSERCION DE VACUNAS
 insert into vacuna (nombre_vacuna, fecha_aplicacion, proxima_dosis, id_expediente) values
   ('Séxtuple',     date_sub(curdate(), interval 7 day),  date_add(curdate(), interval 358 day), 1),
   ('Antirrábica',  date_sub(curdate(), interval 30 day), date_add(curdate(), interval 335 day), 2);
  
---- INSERCION DE FACTURAS
+-- INSERCION DE FACTURAS
 insert into factura (numero_factura, fecha_emision, monto_total, metodo_pago, id_cliente, id_cita) values
   ('FAC-0001', date_sub(curdate(), interval 7 day), 10000, 'Efectivo', 1, 6);
  

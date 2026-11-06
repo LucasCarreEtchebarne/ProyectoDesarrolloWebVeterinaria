@@ -1,4 +1,4 @@
-<!-- 1 Fragmento con la barra de filtros y el formulario unificado (modal) para agendar y reprogramar citas -->
+<!-- Fragmento #1 barra de filtros y formulario unificado (modal) para agendar y reprogramar citas (HU05, HU12) -->
 <section th:fragment="formulario">
     <div class="row py-4 mb-2 bg-light">
         <div class="col-md-1">
@@ -6,22 +6,27 @@
         <div class="col-md-8">
             <form th:action="@{/cita/listado}" method="get" class="row g-2 align-items-end">
                 <div class="col-md-5">
-                    <label for="filtroVeterinario" class="form-label small mb-1">Veterinario</label>
-                    <select id="filtroVeterinario" name="veterinarioId" class="form-select">
-                        <option value="">Todos los veterinarios</option>
+                    <label for="filtroVeterinario" class="form-label small mb-1">[[#{cita.veterinario}]]</label>
+                                        <select id="filtroVeterinario" name="veterinarioId" class="form-select" onchange="this.form.submit()">
+                        <option value="">[[#{cita.todosVeterinarios}]]</option>
                         <option th:each="v : ${veterinarios}"
                                 th:value="${v.idVeterinario}"
                                 th:selected="${v.idVeterinario == veterinarioId}">[[${v.nombre}]]</option>
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label for="filtroFecha" class="form-label small mb-1">Fecha</label>
-                    <input type="date" id="filtroFecha" name="fecha" class="form-control" th:value="${fecha}" required/>
-                </div>
                 <div class="col-md-3">
+                    <label for="filtroFecha" class="form-label small mb-1">[[#{cita.fecha}]]</label>
+                                        <input type="date" id="filtroFecha" name="fecha" class="form-control" th:value="${fecha}" onchange="this.form.submit()"/>
+                </div>
+                <div class="col-md-2">
                     <button type="submit" class="btn btn-outline-primary w-100">
-                        <i class="fa-solid fa-magnifying-glass"></i> Ver agenda
+                        <i class="fa-solid fa-magnifying-glass"></i> [[#{cita.verAgenda}]]
                     </button>
+                </div>
+                <div class="col-md-2">
+                    <a th:href="@{/cita/listado}" class="btn btn-outline-secondary w-100">
+                        <i class="fa-solid fa-list"></i> [[#{cita.verTodas}]]
+                    </a>
                 </div>
             </form>
         </div>
@@ -31,8 +36,8 @@
                     data-bs-toggle="modal"
                     data-bs-target="#citaModal"
                     data-modo="agregar"
-                    data-titulo="Agendar cita">
-                <i class="fa-solid fa-plus"></i> Agendar cita
+                    th:data-titulo="#{cita.agendar}">
+                <i class="fa-solid fa-plus"></i> [[#{cita.agendar}]]
             </button>
         </div>
     </div>
@@ -43,33 +48,33 @@
                 <form id="citaForm" method="post" th:action="@{/cita/guardar}">
                     <div class="modal-header" id="citaModalHeader">
                         <h5 class="modal-title" id="citaModalTitulo"></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" id="citaId" name="idCita"/>
 
                         <div class="mb-3">
-                            <label for="citaMascota">Mascota</label>
+                            <label for="citaMascota">[[#{cita.mascota}]]</label>
                             <select id="citaMascota" name="idMascota" class="form-select" required>
-                                <option value="">Seleccione una mascota</option>
+                                <option value="">[[#{accion.seleccione}]]</option>
                                 <option th:each="m : ${mascotas}"
                                         th:value="${m.idMascota}">[[${m.nombre}]] ([[${m.especie}]]) - [[${m.cliente.nombre}]]</option>
                             </select>
                         </div>
 
                         <div class="mb-3">
-                            <label for="citaServicio">Servicio</label>
+                            <label for="citaServicio">[[#{cita.servicio}]]</label>
                             <select id="citaServicio" name="idServicio" class="form-select" required>
-                                <option value="">Seleccione un servicio</option>
+                                <option value="">[[#{accion.seleccione}]]</option>
                                 <option th:each="s : ${servicios}"
-                                        th:value="${s.id}">[[${s.nombre}]] - ₡[[${s.precio}]]</option>
+                                        th:value="${s.idServicio}">[[${s.nombreServicio}]] - [[${#numbers.formatCurrency(s.precio)}]]</option>
                             </select>
                         </div>
 
                         <div class="mb-3">
-                            <label for="citaVeterinario">Veterinario</label>
+                            <label for="citaVeterinario">[[#{cita.veterinario}]]</label>
                             <select id="citaVeterinario" name="idVeterinario" class="form-select" required>
-                                <option value="">Seleccione un veterinario</option>
+                                <option value="">[[#{accion.seleccione}]]</option>
                                 <option th:each="v : ${veterinarios}"
                                         th:value="${v.idVeterinario}">[[${v.nombre}]]</option>
                             </select>
@@ -77,30 +82,29 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="citaFecha">Fecha</label>
+                                <label for="citaFecha">[[#{cita.fecha}]]</label>
                                 <input type="date" id="citaFecha" name="fecha" class="form-control" required/>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="citaHora">Hora disponible</label>
+                                <label for="citaHora">[[#{cita.horaDisponible}]]</label>
                                 <select id="citaHora" name="hora" class="form-select" required
                                         th:data-url="@{/cita/disponibilidad}">
-                                    <option value="">Seleccione veterinario y fecha</option>
+                                    <option value="">[[#{accion.seleccione}]]</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="citaMotivo">Motivo (opcional)</label>
-                            <textarea id="citaMotivo" name="motivo" class="form-control" rows="3"
-                                      placeholder="Ej. Control anual, vómito desde ayer..."></textarea>
+                            <label for="citaMotivo">[[#{cita.motivo}]]</label>
+                            <textarea id="citaMotivo" name="motivo" class="form-control" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="fa-solid fa-xmark"></i> Cerrar
+                            <i class="fa-solid fa-xmark"></i> [[#{accion.cerrar}]]
                         </button>
                         <button type="submit" class="btn btn-success">
-                            <i class="fa-solid fa-floppy-disk"></i> Guardar
+                            <i class="fa-solid fa-floppy-disk"></i> [[#{accion.guardar}]]
                         </button>
                     </div>
                 </form>
@@ -109,60 +113,63 @@
     </div>
 </section>
 
-<!-- fragmento 2 para la agenda del día (HU06) -->
+<!-- Fragmento #2 agenda de citas (HU06) -->
 <section th:fragment="listado" class="p-3">
     <div class="row p-3">
         <div class="col-md-9">
             <div class="card p-2">
                 <div class="card-header">
-                    <h4>Agenda del día - [[${#temporals.format(fecha, 'dd/MM/yyyy')}]]</h4>
+                    <h4 th:if="${fecha != null}">[[#{cita.agenda}]] - [[${#temporals.format(fecha, 'dd/MM/yyyy')}]]</h4>
+                    <h4 th:if="${fecha == null}">[[#{cita.todas}]]</h4>
                 </div>
                 <div class="card-body">
                     <div th:if="${citas != null and !citas.empty}">
                         <table class="table table-striped table-hover cita-tabla">
                             <thead>
                                 <tr>
-                                    <th>Hora</th>
-                                    <th>Mascota</th>
-                                    <th>Servicio</th>
-                                    <th>Veterinario</th>
-                                    <th>Motivo</th>
-                                    <th>Estado</th>
+                                    <th>[[#{cita.fecha}]]</th>
+                                    <th>[[#{cita.hora}]]</th>
+                                    <th>[[#{cita.mascota}]]</th>
+                                    <th>[[#{cita.servicio}]]</th>
+                                    <th>[[#{cita.veterinario}]]</th>
+                                    <th>[[#{cita.motivo}]]</th>
+                                    <th>[[#{cita.estado}]]</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="c : ${citas}"
                                     th:classappend="${c.estado.name() == 'CANCELADA'} ? 'cita-cancelada'">
+                                    <td>[[${#temporals.format(c.fecha, 'dd/MM/yyyy')}]]</td>
                                     <td class="cita-hora">[[${#temporals.format(c.hora, 'HH:mm')}]]</td>
                                     <td>[[${c.mascota.nombre}]]
                                         <small class="text-muted d-block">[[${c.mascota.especie}]]</small></td>
-                                    <td>[[${c.servicio.nombre}]]</td>
+                                    <td>[[${c.servicio.nombreServicio}]]</td>
                                     <td>[[${c.veterinario.nombre}]]</td>
                                     <td>[[${c.motivo}]]</td>
                                     <td><span class="badge" th:classappend="${'text-bg-' + c.estado.color}">[[${c.estado.etiqueta}]]</span></td>
-                                    <td>
+                                    <td class="text-nowrap">
                                         <div th:if="${c.estado.name() == 'PROGRAMADA'}">
                                             <button type="button" class="btn btn-danger btn-sm"
                                                     data-bs-toggle="modal" data-bs-target="#confirmModal"
                                                     th:data-bs-id="${c.idCita}"
-                                                    th:data-bs-descripcion="${c.mascota.nombre + ' a las ' + #temporals.format(c.hora, 'HH:mm')}">
-                                                <i class="fa-solid fa-ban"></i> Cancelar
+                                                    th:data-bs-descripcion="${c.mascota.nombre + ' - ' + #temporals.format(c.hora, 'HH:mm')}">
+                                                <i class="fa-solid fa-ban"></i> [[#{cita.cancelar}]]
                                             </button>
                                             <button type="button"
                                                     class="btn btn-warning btn-sm"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#citaModal"
                                                     data-modo="editar"
-                                                    data-titulo="Reprogramar cita"
+                                                    th:data-titulo="#{cita.reprogramar}"
                                                     th:data-id="${c.idCita}"
                                                     th:data-mascota="${c.mascota.idMascota}"
-                                                    th:data-servicio="${c.servicio.id}"
+                                                    th:data-servicio="${c.servicio.idServicio}"
                                                     th:data-veterinario="${c.veterinario.idVeterinario}"
                                                     th:data-fecha="${c.fecha}"
                                                     th:data-hora="${c.hora}"
                                                     th:data-motivo="${c.motivo}">
-                                                <i class="fa-solid fa-rotate"></i> Reprogramar
+                                                <i class="fa-solid fa-rotate"></i> [[#{cita.reprogramar}]]
                                             </button>
                                         </div>
                                     </td>
@@ -171,24 +178,24 @@
                         </table>
                     </div>
                     <div class="text-center p-2" th:if="${citas == null or citas.empty}">
-                        <span>No hay citas para esta fecha.</span>
+                        <span>[[#{lista.vacia}]]</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card text-center bg-success text-white mb-3">
-                <div class="card-body"><h3>Citas del día</h3>
+                <div class="card-body"><h3>[[#{cita.total}]]</h3>
                     <h4 class="fs-2"><i class="fas fa-calendar-day"></i> [[${totalCitas}]]</h4>
                 </div>
             </div>
             <div class="card text-center bg-primary text-white mb-3">
-                <div class="card-body"><h5>Programadas</h5>
+                <div class="card-body"><h5>[[#{cita.programadas}]]</h5>
                     <h4 class="fs-3">[[${programadas}]]</h4>
                 </div>
             </div>
             <div class="card text-center bg-danger text-white mb-3">
-                <div class="card-body"><h5>Canceladas</h5>
+                <div class="card-body"><h5>[[#{cita.canceladas}]]</h5>
                     <h4 class="fs-3">[[${canceladas}]]</h4>
                 </div>
             </div>
@@ -196,7 +203,7 @@
     </div>
 </section>
 
-<!-- fragmento 3: ventana para confirmar la cancelación de una cita (HU11).
+<!-- Fragmento #3 ventana para confirmar la cancelación de una cita (HU11).
      Usa los mismos ids que el modal de eliminar (confirmModal, modalId, modalDescripcion)
      para que rutinas.js le cargue los datos sin código extra -->
 <section th:fragment="confirmarCancelar">
@@ -208,19 +215,19 @@
                     <input type="hidden" name="veterinarioId" th:value="${veterinarioId}"/>
                     <input type="hidden" name="fecha" th:value="${fecha}"/>
                     <div class="modal-header bg-warning text-white">
-                        <h5 class="modal-title"><i class="fa-solid fa-circle-radiation"></i> Confirmar cancelación</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        <h5 class="modal-title"><i class="fa-solid fa-circle-radiation"></i> [[#{cita.confirmar}]]</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <p>¿Desea cancelar la cita de <strong id="modalDescripcion"></strong>?</p>
-                        <h6>La cita se conserva en el historial con estado "Cancelada" y el horario queda libre.</h6>
+                        <p>[[#{cita.confirmar.texto1}]]<strong id="modalDescripcion"></strong>?</p>
+                        <h6>[[#{cita.confirmar.texto2}]]</h6>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-danger">
-                            <i class="fa-solid fa-ban"></i> Cancelar cita
+                            <i class="fa-solid fa-ban"></i> [[#{cita.cancelarCita}]]
                         </button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="fa-solid fa-xmark"></i> Volver
+                            <i class="fa-solid fa-xmark"></i> [[#{accion.regresar}]]
                         </button>
                     </div>
                 </form>

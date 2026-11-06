@@ -1,0 +1,122 @@
+<!-- Fragmento #1 formulario unificado para registrar y modificar una vacuna (HU09) -->
+<section th:fragment="formulario">
+    <div class="row py-4 mb-2 bg-light">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#vacunaModal"
+                    data-modo="agregar" th:data-titulo="#{vacuna.agregar}">
+                <i class="fa-solid fa-plus"></i> [[#{vacuna.agregar}]]
+            </button>
+        </div>
+    </div>
+    <div class="modal fade modal-formulario" id="vacunaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" th:action="@{/vacuna/guardar}">
+                    <div class="modal-header">
+                        <h5 class="modal-title"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="vacuna-id" name="idVacuna"/>
+                        <div class="mb-3">
+                            <label for="vacuna-expediente">[[#{vacuna.expediente}]]</label>
+                            <select id="vacuna-expediente" name="expediente.idExpediente" class="form-select" required>
+                                <option th:each="e : ${expedientes}" th:value="${e.idExpediente}">#[[${e.idExpediente}]] - [[${e.mascota.nombre}]] ([[${#temporals.format(e.fechaRegistro, 'dd/MM/yyyy')}]])</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vacuna-nombre">[[#{vacuna.nombre}]]</label>
+                            <input type="text" id="vacuna-nombre" name="nombreVacuna" class="form-control" maxlength="100" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vacuna-aplicacion">[[#{vacuna.fechaAplicacion}]]</label>
+                            <input type="date" id="vacuna-aplicacion" name="fechaAplicacion" class="form-control" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vacuna-proxima">[[#{vacuna.proximaDosis}]]</label>
+                            <input type="date" id="vacuna-proxima" name="proximaDosis" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> [[#{accion.cerrar}]]
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk"></i> [[#{accion.guardar}]]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Fragmento #2 listado de vacunas aplicadas -->
+<section th:fragment="listado" class="p-3">
+    <div class="row p-3">
+        <div class="col-md-9">
+            <div class="card p-2">
+                <div class="card-header"><h4>[[#{vacuna.listado}]]</h4></div>
+                <div class="card-body">
+                    <div th:if="${vacunas != null and !vacunas.empty}">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>[[#{vacuna.nombre}]]</th>
+                                    <th>[[#{vacuna.mascota}]]</th>
+                                    <th>[[#{vacuna.fechaAplicacion}]]</th>
+                                    <th>[[#{vacuna.proximaDosis}]]</th>
+                                    <th>[[#{vacuna.expediente}]]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="v : ${vacunas}">
+                                    <td>[[${v.idVacuna}]]</td>
+                                    <td>[[${v.nombreVacuna}]]</td>
+                                    <td>[[${v.expediente.mascota.nombre}]]</td>
+                                    <td>[[${#temporals.format(v.fechaAplicacion, 'dd/MM/yyyy')}]]</td>
+                                    <td>[[${#temporals.format(v.proximaDosis, 'dd/MM/yyyy')}]]</td>
+                                    <td>#[[${v.expediente.idExpediente}]]</td>
+                                    <td class="text-nowrap">
+                                        <button type="button" class="btn btn-danger btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#confirmModal"
+                                                th:data-bs-id="${v.idVacuna}"
+                                                th:data-bs-descripcion="${v.nombreVacuna}">
+                                            <i class="fa-solid fa-trash"></i> [[#{accion.eliminar}]]
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#vacunaModal"
+                                                data-modo="editar"
+                                                th:data-titulo="#{accion.actualizar}"
+                                                th:data-campo-vacuna-id="${v.idVacuna}"
+                                                th:data-campo-vacuna-expediente="${v.expediente.idExpediente}"
+                                                th:data-campo-vacuna-nombre="${v.nombreVacuna}"
+                                                th:data-campo-vacuna-aplicacion="${v.fechaAplicacion}"
+                                                th:data-campo-vacuna-proxima="${v.proximaDosis}">
+                                            <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center p-2" th:if="${vacunas == null or vacunas.empty}">
+                        <span>[[#{lista.vacia}]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white mb-3">
+                <div class="card-body"><h3>[[#{vacuna.total}]]</h3>
+                    <h4 class="fs-2"><i class="fa-solid fa-syringe"></i> [[${totalVacunas}]]</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

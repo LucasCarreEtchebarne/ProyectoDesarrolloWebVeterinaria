@@ -1,0 +1,143 @@
+<!-- Fragmento #1 formulario unificado para agregar y modificar un expediente médico (HU07, HU08) -->
+<section th:fragment="formulario">
+    <div class="row py-4 mb-2 bg-light">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#expedienteModal"
+                    data-modo="agregar" th:data-titulo="#{expediente.agregar}">
+                <i class="fa-solid fa-plus"></i> [[#{expediente.agregar}]]
+            </button>
+        </div>
+    </div>
+    <div class="modal fade modal-formulario" id="expedienteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form method="post" th:action="@{/expediente/guardar}">
+                    <div class="modal-header">
+                        <h5 class="modal-title"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="expediente-id" name="idExpediente"/>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="expediente-mascota">[[#{expediente.mascota}]]</label>
+                                <select id="expediente-mascota" name="mascota.idMascota" class="form-select" required>
+                                    <option th:each="m : ${mascotas}" th:value="${m.idMascota}">[[${m.nombre}]] - [[${m.cliente.nombre}]]</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="expediente-veterinario">[[#{expediente.veterinario}]]</label>
+                                <select id="expediente-veterinario" name="veterinario.idVeterinario" class="form-select" required>
+                                    <option th:each="v : ${veterinarios}" th:value="${v.idVeterinario}">[[${v.nombre}]]</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expediente-fecha">[[#{expediente.fechaRegistro}]]</label>
+                            <input type="date" id="expediente-fecha" name="fechaRegistro" class="form-control" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expediente-sintomas">[[#{expediente.sintomas}]]</label>
+                            <textarea id="expediente-sintomas" name="sintomas" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expediente-observaciones">[[#{expediente.observaciones}]]</label>
+                            <textarea id="expediente-observaciones" name="observaciones" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expediente-diagnostico">[[#{expediente.diagnostico}]]</label>
+                            <textarea id="expediente-diagnostico" name="diagnostico" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expediente-tratamiento">[[#{expediente.tratamiento}]]</label>
+                            <textarea id="expediente-tratamiento" name="tratamiento" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> [[#{accion.cerrar}]]
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk"></i> [[#{accion.guardar}]]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Fragmento #2 listado de expedientes médicos -->
+<section th:fragment="listado" class="p-3">
+    <div class="row p-3">
+        <div class="col-md-9">
+            <div class="card p-2">
+                <div class="card-header"><h4>[[#{expediente.listado}]]</h4></div>
+                <div class="card-body">
+                    <div th:if="${expedientes != null and !expedientes.empty}">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>[[#{expediente.fechaRegistro}]]</th>
+                                    <th>[[#{expediente.mascota}]]</th>
+                                    <th>[[#{expediente.veterinario}]]</th>
+                                    <th>[[#{expediente.sintomas}]]</th>
+                                    <th>[[#{expediente.diagnostico}]]</th>
+                                    <th>[[#{expediente.tratamiento}]]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="e : ${expedientes}">
+                                    <td>[[${e.idExpediente}]]</td>
+                                    <td>[[${#temporals.format(e.fechaRegistro, 'dd/MM/yyyy')}]]</td>
+                                    <td>[[${e.mascota.nombre}]]</td>
+                                    <td>[[${e.veterinario.nombre}]]</td>
+                                    <td>[[${e.sintomas}]]</td>
+                                    <td>[[${e.diagnostico}]]</td>
+                                    <td>[[${e.tratamiento}]]</td>
+                                    <td class="text-nowrap">
+                                        <button type="button" class="btn btn-danger btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#confirmModal"
+                                                th:data-bs-id="${e.idExpediente}"
+                                                th:data-bs-descripcion="${e.mascota.nombre}">
+                                            <i class="fa-solid fa-trash"></i> [[#{accion.eliminar}]]
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#expedienteModal"
+                                                data-modo="editar"
+                                                th:data-titulo="#{accion.actualizar}"
+                                                th:data-campo-expediente-id="${e.idExpediente}"
+                                                th:data-campo-expediente-mascota="${e.mascota.idMascota}"
+                                                th:data-campo-expediente-veterinario="${e.veterinario.idVeterinario}"
+                                                th:data-campo-expediente-fecha="${e.fechaRegistro}"
+                                                th:data-campo-expediente-sintomas="${e.sintomas}"
+                                                th:data-campo-expediente-observaciones="${e.observaciones}"
+                                                th:data-campo-expediente-diagnostico="${e.diagnostico}"
+                                                th:data-campo-expediente-tratamiento="${e.tratamiento}">
+                                            <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center p-2" th:if="${expedientes == null or expedientes.empty}">
+                        <span>[[#{lista.vacia}]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white mb-3">
+                <div class="card-body"><h3>[[#{expediente.total}]]</h3>
+                    <h4 class="fs-2"><i class="fa-solid fa-notes-medical"></i> [[${totalExpedientes}]]</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

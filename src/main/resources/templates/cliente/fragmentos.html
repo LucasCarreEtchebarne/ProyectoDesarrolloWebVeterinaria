@@ -1,0 +1,125 @@
+<!-- Fragmento #1 formulario unificado para agregar y modificar un cliente (HU01, HU02) -->
+<section th:fragment="formulario">
+    <div class="row py-4 mb-2 bg-light">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#clienteModal"
+                    data-modo="agregar" th:data-titulo="#{cliente.agregar}">
+                <i class="fa-solid fa-plus"></i> [[#{cliente.agregar}]]
+            </button>
+        </div>
+    </div>
+    <div class="modal fade modal-formulario" id="clienteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" th:action="@{/cliente/guardar}">
+                    <div class="modal-header">
+                        <h5 class="modal-title"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="cliente-id" name="idCliente"/>
+                        <div class="mb-3">
+                            <label for="cliente-identificacion">[[#{cliente.identificacion}]]</label>
+                            <input type="text" id="cliente-identificacion" name="identificacion" class="form-control" maxlength="20" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cliente-nombre">[[#{cliente.nombre}]]</label>
+                            <input type="text" id="cliente-nombre" name="nombre" class="form-control" maxlength="100" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cliente-telefono">[[#{cliente.telefono}]]</label>
+                            <input type="text" id="cliente-telefono" name="telefono" class="form-control" maxlength="20"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cliente-correo">[[#{cliente.correo}]]</label>
+                            <input type="email" id="cliente-correo" name="correo" class="form-control" maxlength="100"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cliente-direccion">[[#{cliente.direccion}]]</label>
+                            <input type="text" id="cliente-direccion" name="direccion" class="form-control" maxlength="255"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> [[#{accion.cerrar}]]
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk"></i> [[#{accion.guardar}]]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Fragmento #2 listado de clientes -->
+<section th:fragment="listado" class="p-3">
+    <div class="row p-3">
+        <div class="col-md-9">
+            <div class="card p-2">
+                <div class="card-header"><h4>[[#{cliente.listado}]]</h4></div>
+                <div class="card-body">
+                    <div th:if="${clientes != null and !clientes.empty}">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>[[#{cliente.identificacion}]]</th>
+                                    <th>[[#{cliente.nombre}]]</th>
+                                    <th>[[#{cliente.telefono}]]</th>
+                                    <th>[[#{cliente.correo}]]</th>
+                                    <th>[[#{cliente.direccion}]]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="c : ${clientes}">
+                                    <td>[[${c.idCliente}]]</td>
+                                    <td>[[${c.identificacion}]]</td>
+                                    <td>[[${c.nombre}]]</td>
+                                    <td>[[${c.telefono}]]</td>
+                                    <td>[[${c.correo}]]</td>
+                                    <td>[[${c.direccion}]]</td>
+                                    <td class="text-nowrap">
+                                        <button type="button" class="btn btn-danger btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#confirmModal"
+                                                th:data-bs-id="${c.idCliente}"
+                                                th:data-bs-descripcion="${c.nombre}">
+                                            <i class="fa-solid fa-trash"></i> [[#{accion.eliminar}]]
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#clienteModal"
+                                                data-modo="editar"
+                                                th:data-titulo="#{accion.actualizar}"
+                                                th:data-campo-cliente-id="${c.idCliente}"
+                                                th:data-campo-cliente-identificacion="${c.identificacion}"
+                                                th:data-campo-cliente-nombre="${c.nombre}"
+                                                th:data-campo-cliente-telefono="${c.telefono}"
+                                                th:data-campo-cliente-correo="${c.correo}"
+                                                th:data-campo-cliente-direccion="${c.direccion}">
+                                            <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center p-2" th:if="${clientes == null or clientes.empty}">
+                        <span>[[#{lista.vacia}]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white mb-3">
+                <div class="card-body"><h3>[[#{cliente.total}]]</h3>
+                    <h4 class="fs-2"><i class="fa-solid fa-users"></i> [[${totalClientes}]]</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

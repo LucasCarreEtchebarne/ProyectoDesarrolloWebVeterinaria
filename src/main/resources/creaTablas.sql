@@ -45,6 +45,7 @@ create table cliente (
   identificacion VARCHAR(20) NOT NULL,
   nombre VARCHAR(100) NOT NULL,
   telefono VARCHAR(20),
+  correo VARCHAR(100),
   direccion VARCHAR(255),
   id_usuario INT NULL,
   PRIMARY KEY (id_cliente),
@@ -166,10 +167,10 @@ insert into usuario (correo, contrasena, estado, id_rol) values
   ('maria.solis@correo.com',  '$2a$10$nCYAwz53.NLZjazam7IEs.RqytLvfXO4HzUOMDD829kSQvzwJWRAS', true, 4);
  
 --- INSERCION DE CLIENTES
-insert into cliente (identificacion, nombre, telefono, direccion, id_usuario) values
-  ('1-1111-1111', 'Juan Chacón Mora',   '8888-1111', 'San Pedro, San José', 5),
-  ('2-2222-2222', 'María Solís Vargas', '8888-2222', 'Curridabat, San José', 6),
-  ('3-3333-3333', 'Pedro Alvarado Rojas', '8888-3333', 'Tres Ríos, Cartago', null);
+insert into cliente (identificacion, nombre, telefono, correo, direccion, id_usuario) values
+  ('1-1111-1111', 'Juan Chacón Mora',   '8888-1111', 'juan.chacon@correo.com', 'San Pedro, San José', 5),
+  ('2-2222-2222', 'María Solís Vargas', '8888-2222', 'maria.solis@correo.com', 'Curridabat, San José', 6),
+  ('3-3333-3333', 'Pedro Alvarado Rojas', '8888-3333', 'pedro.alvarado@correo.com', 'Tres Ríos, Cartago', null);
  
 --- INSERCION DE MASCOTAS
 insert into mascota (nombre, especie, raza, fecha_nacimiento, id_cliente) values

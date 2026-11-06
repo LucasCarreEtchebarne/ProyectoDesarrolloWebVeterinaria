@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mascotas - MetroPet Clinic</title>
+</head>
+<body>
+
+    <h1>Lista de mascotas</h1>
+
+    <a th:href="@{/mascotas/nuevo}">Registrar mascota</a>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Especie</th>
+                <th>Raza</th>
+                <th>Fecha de nacimiento</th>
+                <th>Propietario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="mascota : ${mascotas}">
+                <td th:text="${mascota.nombre}"></td>
+                <td th:text="${mascota.especie}"></td>
+                <td th:text="${mascota.raza}"></td>
+                <td th:text="${mascota.fechaNacimiento}"></td>
+                <td th:text="${mascota.cliente.nombre}"></td>
+                <td>
+                    <a th:href="@{/mascotas/editar/{id}(id=${mascota.idMascota})}">
+                        Editar
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

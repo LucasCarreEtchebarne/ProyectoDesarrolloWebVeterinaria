@@ -90,5 +90,9 @@ body {
     margin-top: auto;
 }
 
+.cita-hora { font-weight: 700; color: #0d6efd; white-space: nowrap; }
+.cita-tabla thead { background-color: #e7f1ff; color: #0d6efd; }
+.cita-cancelada td { color: #6c757d; }
+.cita-cancelada .cita-hora { color: #6c757d; text-decoration: line-through; }
  
 
